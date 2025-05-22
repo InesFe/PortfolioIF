@@ -1,0 +1,5 @@
+.bg-texture{
+    background-image: asset-url('asfalt.png');
+    background-size: auto;
+    background-repeat: repeat;
+}
