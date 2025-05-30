@@ -2,19 +2,17 @@
 
   <nav class="fixed top-0 left-0 w-full p-6 z-50 flex justify-between text-sm uppercase">
     <div>
-      <%= link_to "to Tokyo mode", root_path, class: "hover:underline font-bold" %>
+      <%= link_to "to Tokyo mode", root_path, data: { turbo:false }, class: "hover:underline font-bold" %>
     </div>
 
     <div class="space-x-8">
       <%= link_to "Projects", "#", id:"projects-link", class: "hover:underline font-bold" %>
       <%= link_to "Info", "#", id: "info-link", class: "hover:underline font-bold" %>
     
-      <!-- Contact button -->
       <button id="contact-link" class="hover:underline font-bold">
         CONTACT
       </button>
 
-      <!-- Email address (initially hidden) -->
       <div id="email-display" class="absolute right-14 mt-2 opacity-0 transition-opacity duration-500 ease-in-out text-xs text-[#B0C4DE] pointer-events-none font-bold">
           <a href="mailto:you@example.com" class="underline">you@example.com</a>
       </div>
@@ -29,39 +27,39 @@
   </section>
 
   <script>
-      document.addEventListener("turbo:load", function () {
-        const contactLink = document.getElementById("contact-link");
-        const emailDisplay = document.getElementById("email-display");
-        const infoLink = document.getElementById("info-link");
-        const projectsLink = document.getElementById("projects-link");
+    document.addEventListener("turbo:load", () => {
+      const emailDisplay = document.getElementById("email-display");
+      if (emailDisplay) {
+        emailDisplay.classList.remove("opacity-100", "pointer-events-auto");
+        emailDisplay.classList.add("opacity-0", "pointer-events-none");
+      }
+    });
 
-        function hideEmail() {
+    document.addEventListener("click", (event) => {
+      const emailDisplay = document.getElementById("email-display");
+      if (!emailDisplay) return;
+
+      const target = event.target.closest("a, button");
+      if (!target) return;
+
+      if (target.id === "contact-link") {
+        event.preventDefault();
+
+        const isVisible = emailDisplay.classList.contains("opacity-100");
+
+        if (isVisible) {
           emailDisplay.classList.remove("opacity-100", "pointer-events-auto");
           emailDisplay.classList.add("opacity-0", "pointer-events-none");
+        } else {
+          emailDisplay.classList.remove("opacity-0", "pointer-events-none");
+          emailDisplay.classList.add("opacity-100", "pointer-events-auto");
         }
+      }
 
-        function toggleEmail() {
-          const isVisible = emailDisplay.classList.contains("opacity-100");
-          if (isVisible) {
-            hideEmail();
-          }  
-          else {
-            emailDisplay.classList.remove("opacity-0", "pointer-events-none");
-            emailDisplay.classList.add("opacity-100", "pointer-events-auto");
-          }
-        }
-
-        if (contactLink) {
-          contactLink.addEventListener("click", toggleEmail);
-        }
-
-        if (infoLink) {
-          infoLink.addEventListener("click", hideEmail);
-        }
-
-      if (projectsLink) {
-        projectsLink.addEventListener("click", hideEmail);
-        }
-      });
-    </script>
+      if (target.id === "info-link" || target.id === "projects-link") {
+        emailDisplay.classList.remove("opacity-100", "pointer-events-auto");
+        emailDisplay.classList.add("opacity-0", "pointer-events-none");
+      }
+    });
+  </script>
 </body>

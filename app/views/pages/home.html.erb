@@ -1,24 +1,33 @@
- <body style= "background-image: url('<%= asset_path("asfalt.png") %>');" class="bg-texture text-gray-800 font-sans tracking-wide">
+<body style= "background-image: url('<%= asset_path("asfalt.png") %>');" class="bg-texture text-gray-800 font-sans tracking-wide">
 
   <nav class="fixed top-0 left-0 w-full p-6 z-50 flex justify-between text-sm uppercase">
     <div>
-      <%= link_to "to Diner mode", diner_path, class: "hover:underline font-bold" %>
+      <%= link_to "to Diner mode", diner_path, data: { turbo: false }, class: "hover:underline font-bold" %>
     </div>
 
     <div class="space-x-8">
       <%= link_to "Projects", "#", id:"projects-link", class: "hover:underline font-bold" %>
-      <%= link_to "Info", "#", id:"info-link", class: "hover:underline font-bold" %>
-    
-      <!-- Contact button -->
+      
+      <button id="info-link" class="hover:underline font-bold">
+        INFO
+      </button>
+
       <button id="contact-link" class="hover:underline font-bold">
         CONTACT
       </button>
 
-      <!-- Email address (initially hidden) -->
       <div id="email-display" class="absolute right-14 mt-2 opacity-0 transition-opacity duration-500 ease-in-out text-xs text-gray-800 pointer-events-none font-bold">
         <a href="mailto:you@example.com" class="underline">you@example.com</a>
       </div>
   </nav>
+
+  <div id="bio-display" 
+     class="fixed top-[7rem] right-14 h-[calc(100vh-6rem)] w-1/3 max-w-sm p-6 opacity-0 transition-opacity duration-500 ease-in-out pointer-events-none text-sm leading-relaxed text-gray-800 font-bold">
+      <p class="mb-4">
+        Inès Février is a web developer blending creative visuals with code precision. 
+        Passionate about interfaces, she builds clean, thoughtful, and human-centered web experiences.
+      </p>
+  </div>
 
   <section class="min-h-screen flex items-center justify-start pl-14">
     <div class="text-center space-y-6">
@@ -26,41 +35,81 @@
       <p class="text-2xl font-bold uppercase text-gray-800">Web Developer</p>
     </div>
   </section>
-
+  
   <script>
-    document.addEventListener("turbo:load", function () {
-      const contactLink = document.getElementById("contact-link");
+    document.addEventListener("turbo:load", () => {
       const emailDisplay = document.getElementById("email-display");
-      const infoLink = document.getElementById("info-link");
+      const bioDisplay = document.getElementById("bio-display");
       const projectsLink = document.getElementById("projects-link");
 
-      function hideEmail() {
+      if (emailDisplay) {
         emailDisplay.classList.remove("opacity-100", "pointer-events-auto");
         emailDisplay.classList.add("opacity-0", "pointer-events-none");
       }
 
-      function toggleEmail() {
-        const isVisible = emailDisplay.classList.contains("opacity-100");
-        if (isVisible) {
-          hideEmail();
-        }  
-        else {
-          emailDisplay.classList.remove("opacity-0", "pointer-events-none");
-          emailDisplay.classList.add("opacity-100", "pointer-events-auto");
-        }
+    if (bioDisplay && projectsLink) {
+      bioDisplay.classList.remove("opacity-100", "pointer-events-auto");
+      bioDisplay.classList.add("opacity-0", "pointer-events-none");
+      const rect = projectsLink.getBoundingClientRect();
+      const offset = 21;
+      bioDisplay.style.left = `${rect.left - offset}px`;
+      bioDisplay.style.top = '3.5rem'; // or your desired vertical offset
+      bioDisplay.style.width = '20rem'; // or w-80 (max-w-sm)
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    const emailDisplay = document.getElementById("email-display");
+    const bioDisplay = document.getElementById("bio-display");
+      if (!emailDisplay || !bioDisplay) return;
+        const target = event.target.closest("a, button");
+      if (!target) return;
+
+      if (target.id === "contact-link") {
+        event.preventDefault();
+      const isVisible = emailDisplay.classList.contains("opacity-100");
+
+    // Toggle email
+      if (isVisible) {
+        emailDisplay.classList.remove("opacity-100", "pointer-events-auto");
+        emailDisplay.classList.add("opacity-0", "pointer-events-none");
+      } 
+      else {
+        emailDisplay.classList.remove("opacity-0", "pointer-events-none");
+        emailDisplay.classList.add("opacity-100", "pointer-events-auto");
       }
 
-      if (contactLink) {
-        contactLink.addEventListener("click", toggleEmail);
+    // Hide bio
+      bioDisplay.classList.remove("opacity-100", "pointer-events-auto");
+      bioDisplay.classList.add("opacity-0", "pointer-events-none");
+    }
+
+    if (target.id === "info-link") {
+      event.preventDefault();
+      const isVisible = bioDisplay.classList.contains("opacity-100");
+
+    // Toggle bio
+    if (isVisible) {
+      bioDisplay.classList.remove("opacity-100", "pointer-events-auto");
+      bioDisplay.classList.add("opacity-0", "pointer-events-none");
+      } 
+    else {
+      bioDisplay.classList.remove("opacity-0", "pointer-events-none");
+      bioDisplay.classList.add("opacity-100", "pointer-events-auto");
       }
 
-      if (infoLink) {
-        infoLink.addEventListener("click", hideEmail);
-      }
+      // Hide email
+    emailDisplay.classList.remove("opacity-100", "pointer-events-auto");
+    emailDisplay.classList.add("opacity-0", "pointer-events-none");
+  } 
 
-     if (projectsLink) {
-       projectsLink.addEventListener("click", hideEmail);
-      }
-    });
+  if (target.id === "projects-link") {
+    emailDisplay.classList.remove("opacity-100", "pointer-events-auto");
+    emailDisplay.classList.add("opacity-0", "pointer-events-none");
+
+    bioDisplay.classList.remove("opacity-100", "pointer-events-auto");
+    bioDisplay.classList.add("opacity-0", "pointer-events-none");
+  }
+});
   </script>
 </body>
