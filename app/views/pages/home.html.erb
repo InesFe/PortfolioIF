@@ -1,34 +1,37 @@
 <body style= "background-image: url('<%= asset_path("asfalt.png") %>');" class="bg-texture text-gray-800 font-sans tracking-wide">
 
-  <nav class="fixed top-0 left-0 w-full p-6 z-50 flex justify-between text-sm uppercase">
-    <div>
+  <nav class="fixed top-0 left-0 w-full z-50 flex justify-between text-sm uppercase">
+    <div class="pl-6 py-6">
       <%= link_to "to Diner mode", diner_path, data: { turbo: false }, class: "hover:underline font-bold" %>
     </div>
 
-    <div class="space-x-8">
-      <%= link_to "Projects", "#", id:"projects-link", class: "hover:underline font-bold" %>
-      
-      <button id="info-link" class="hover:underline font-bold">
-        INFO
-      </button>
-
-      <button id="contact-link" class="hover:underline font-bold">
-        CONTACT
-      </button>
-
-      <div id="email-display" class="absolute right-14 mt-2 opacity-0 transition-opacity duration-500 ease-in-out text-xs text-gray-800 pointer-events-none font-bold">
-        <a href="mailto:you@example.com" class="underline">you@example.com</a>
-      </div>
+    <div class="space-x-8 pr-6 py-6">
+      <button id="projects-link" class="hover:underline font-bold">PROJECTS</button>
+      <button id="info-link" class="hover:underline font-bold">INFO</button>
+      <button id="contact-link" class="hover:underline font-bold">CONTACT</button>
+    </div>
   </nav>
-
+      
+  <div id="email-display" class="fixed top-[7rem] h-[calc(100vh-6rem)] w-1/3 max-w-sm p-6 opacity-0 transition-opacity duration-500 ease-in-out pointer-events-none text-base leading-relaxed text-gray-800 font-bold">
+    <a href="mailto:ines.fevrier@gmail.com" class="underline">ines.fevrier@gmail.com</a>
+  </div>
+  
   <div id="bio-display" 
-     class="fixed top-[7rem] right-14 h-[calc(100vh-6rem)] w-1/3 max-w-sm p-6 opacity-0 transition-opacity duration-500 ease-in-out pointer-events-none text-sm leading-relaxed text-gray-800 font-bold">
+     class="fixed top-[7rem] h-[calc(100vh-6rem)] w-1/3 max-w-sm p-6 opacity-0 transition-opacity duration-500 ease-in-out pointer-events-none text-base leading-relaxed text-gray-800 font-semibold">
       <p class="mb-4">
-        Inès Février is a web developer blending creative visuals with code precision. 
-        Passionate about interfaces, she builds clean, thoughtful, and human-centered web experiences.
+        Problem solver, lego builder, urban landscapes inspired. Fullstack. Now, let's talk about your projects and how to give them life. 
       </p>
   </div>
-
+  
+  <div id="projects-display" class="fixed top-[7rem] left-6 h-[calc(100vh-6rem)] w-1/3 max-w-sm p-6 opacity-0 transition-opacity duration-500 ease-in-out pointer-events-none text-3xl leading-relaxed text-gray-800 font-bold space-y-2">
+    <% @projects.each do |project| %>
+      <%= link_to project[:name], project[:url], target: "_blank", class: "underline block" %>
+        <div class="text-sm font-light text-gray-700">
+          <%= project[:year]%>/<%= project[:tech]%>
+        </div>
+    <% end %>
+  </div>
+  
   <section class="min-h-screen flex items-center justify-start pl-14">
     <div class="text-center space-y-6">
       <h1 class="text-5xl font-bold uppercase text-gray-800 tracking-widest">Inès Février</h1>
@@ -39,77 +42,111 @@
   <script>
     document.addEventListener("turbo:load", () => {
       const emailDisplay = document.getElementById("email-display");
+      const contactLink = document.getElementById("contact-link");
       const bioDisplay = document.getElementById("bio-display");
+      const projectsDisplay = document.getElementById("projects-display");
       const projectsLink = document.getElementById("projects-link");
 
-      if (emailDisplay) {
+      if (emailDisplay && projectsLink) {
         emailDisplay.classList.remove("opacity-100", "pointer-events-auto");
         emailDisplay.classList.add("opacity-0", "pointer-events-none");
+        const rect = projectsLink.getBoundingClientRect();
+        const offset = 23;
+        emailDisplay.style.left = `${rect.left - offset}px`;
+        emailDisplay.style.top = '3.5rem';
+        emailDisplay.style.width = '20rem';
+      }
+  
+      if (bioDisplay && projectsLink) {
+        bioDisplay.classList.remove("opacity-100", "pointer-events-auto");
+        bioDisplay.classList.add("opacity-0", "pointer-events-none");
+        const rect = projectsLink.getBoundingClientRect();
+        const offset = 23;
+        bioDisplay.style.left = `${rect.left - offset}px`;
+        bioDisplay.style.top = '3.5rem';
+        bioDisplay.style.width = '20rem';
       }
 
-    if (bioDisplay && projectsLink) {
-      bioDisplay.classList.remove("opacity-100", "pointer-events-auto");
-      bioDisplay.classList.add("opacity-0", "pointer-events-none");
-      const rect = projectsLink.getBoundingClientRect();
-      const offset = 21;
-      bioDisplay.style.left = `${rect.left - offset}px`;
-      bioDisplay.style.top = '3.5rem'; // or your desired vertical offset
-      bioDisplay.style.width = '20rem'; // or w-80 (max-w-sm)
-    }
-  });
+      if (projectsDisplay && projectsLink) {
+        projectsDisplay.classList.remove("opacity-100", "pointer-events-auto");
+        projectsDisplay.classList.add("opacity-0", "pointer-events-none");
+        const rect = projectsLink.getBoundingClientRect();
+        const offset = 23;
+        projectsDisplay.style.left = `${rect.left - offset}px`;
+        projectsDisplay.style.top = '3.5rem';
+        projectsDisplay.style.width = '20rem';
+      }
+   } );
 
-  document.addEventListener("click", (event) => {
-    const emailDisplay = document.getElementById("email-display");
-    const bioDisplay = document.getElementById("bio-display");
-      if (!emailDisplay || !bioDisplay) return;
-        const target = event.target.closest("a, button");
+    document.addEventListener("click", (event) => {
+      const emailDisplay = document.getElementById("email-display");
+      const bioDisplay = document.getElementById("bio-display");
+      const projectsDisplay = document.getElementById("projects-display");
+
+      if (!emailDisplay || !bioDisplay || !projectsDisplay) return;
+
+      const target = event.target.closest("a, button");
       if (!target) return;
 
       if (target.id === "contact-link") {
         event.preventDefault();
-      const isVisible = emailDisplay.classList.contains("opacity-100");
+        const isVisible = emailDisplay.classList.contains("opacity-100");
 
-    // Toggle email
-      if (isVisible) {
+        if (isVisible) {
+          emailDisplay.classList.remove("opacity-100", "pointer-events-auto");
+          emailDisplay.classList.add("opacity-0", "pointer-events-none");
+        } 
+        else {
+          emailDisplay.classList.remove("opacity-0", "pointer-events-none");
+          emailDisplay.classList.add("opacity-100", "pointer-events-auto");
+        }
+
+        bioDisplay.classList.remove("opacity-100", "pointer-events-auto");
+        bioDisplay.classList.add("opacity-0", "pointer-events-none");
+
+        projectsDisplay.classList.remove("opacity-100", "pointer-events-auto");
+        projectsDisplay.classList.add("opacity-0", "pointer-events-none");
+      }
+
+      if (target.id === "info-link") {
+        event.preventDefault();
+        const isVisible = bioDisplay.classList.contains("opacity-100");
+
+        if (isVisible) {
+          bioDisplay.classList.remove("opacity-100", "pointer-events-auto");
+          bioDisplay.classList.add("opacity-0", "pointer-events-none");
+        } 
+        else {
+          bioDisplay.classList.remove("opacity-0", "pointer-events-none");
+          bioDisplay.classList.add("opacity-100", "pointer-events-auto");
+        }
+
         emailDisplay.classList.remove("opacity-100", "pointer-events-auto");
         emailDisplay.classList.add("opacity-0", "pointer-events-none");
-      } 
-      else {
-        emailDisplay.classList.remove("opacity-0", "pointer-events-none");
-        emailDisplay.classList.add("opacity-100", "pointer-events-auto");
+
+        projectsDisplay.classList.remove("opacity-100", "pointer-events-auto");
+        projectsDisplay.classList.add("opacity-0", "pointer-events-none");
       }
 
-    // Hide bio
-      bioDisplay.classList.remove("opacity-100", "pointer-events-auto");
-      bioDisplay.classList.add("opacity-0", "pointer-events-none");
-    }
+      if (target.id === "projects-link") {
+        event.preventDefault();
+        const isVisible = projectsDisplay.classList.contains("opacity-100");
 
-    if (target.id === "info-link") {
-      event.preventDefault();
-      const isVisible = bioDisplay.classList.contains("opacity-100");
+        if (isVisible) {
+            projectsDisplay.classList.remove("opacity-100", "pointer-events-auto");
+          projectsDisplay.classList.add("opacity-0", "pointer-events-none");
+        } 
+        else {
+          projectsDisplay.classList.remove("opacity-0", "pointer-events-none");
+          projectsDisplay.classList.add("opacity-100", "pointer-events-auto");
+        }
 
-    // Toggle bio
-    if (isVisible) {
-      bioDisplay.classList.remove("opacity-100", "pointer-events-auto");
-      bioDisplay.classList.add("opacity-0", "pointer-events-none");
-      } 
-    else {
-      bioDisplay.classList.remove("opacity-0", "pointer-events-none");
-      bioDisplay.classList.add("opacity-100", "pointer-events-auto");
+        emailDisplay.classList.remove("opacity-100", "pointer-events-auto");
+        emailDisplay.classList.add("opacity-0", "pointer-events-none");
+
+        bioDisplay.classList.remove("opacity-100", "pointer-events-auto");
+        bioDisplay.classList.add("opacity-0", "pointer-events-none");
       }
-
-      // Hide email
-    emailDisplay.classList.remove("opacity-100", "pointer-events-auto");
-    emailDisplay.classList.add("opacity-0", "pointer-events-none");
-  } 
-
-  if (target.id === "projects-link") {
-    emailDisplay.classList.remove("opacity-100", "pointer-events-auto");
-    emailDisplay.classList.add("opacity-0", "pointer-events-none");
-
-    bioDisplay.classList.remove("opacity-100", "pointer-events-auto");
-    bioDisplay.classList.add("opacity-0", "pointer-events-none");
-  }
-});
+    } );
   </script>
 </body>
